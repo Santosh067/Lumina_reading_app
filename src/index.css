@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+input[type='range']::-webkit-slider-thumb {
+  width: 20px;
+  height: 20px;
+}
+input[type='range']::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ── Desktop: hide mobile-only elements ─────────────────────────── */
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* ── Mobile: media player layout ────────────────────────────────── */
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .app-container {
+    padding-bottom: 0 !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .reading-area {
+    max-height: 50vh;
+    min-height: 200px;
+    overflow-y: auto;
+  }
+
+  .dock-container {
+    position: static !important;
+    border-radius: 0 !important;
+    border-top: 1px solid;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Controls row — centered with size hierarchy */
+  .mobile-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 8px 0;
+  }
+
+  .btn-play-main {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .btn-control-secondary {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid;
+    background: transparent;
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .btn-control-secondary:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+/* ── Extra small screens (< 480px) ─────────────────────────────── */
+@media (max-width: 479px) {
+  .app-container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .dock-container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
+/* ── Interactive Scrubber ───────────────────────────────────────── */
+.scrubber-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 20px;
+  display: block;
+}
+
+.scrubber-slider:focus {
+  outline: none;
+}
+
+/* Track styles */
+.scrubber-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--slider-progress), #e2e8f0 var(--slider-progress), #e2e8f0 100%);
+  border-radius: 9999px;
+  transition: height 150ms ease;
+}
+.dark .scrubber-slider::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--slider-progress), #334155 var(--slider-progress), #334155 100%);
+}
+
+.scrubber-slider::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--slider-progress), #e2e8f0 var(--slider-progress), #e2e8f0 100%);
+  border-radius: 9999px;
+  transition: height 150ms ease;
+}
+.dark .scrubber-slider::-moz-range-track {
+  background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--slider-progress), #334155 var(--slider-progress), #334155 100%);
+}
+
+/* Hover effects for tracks */
+.scrubber-slider:hover::-webkit-slider-runnable-track {
+  height: 6px;
+}
+.scrubber-slider:hover::-moz-range-track {
+  height: 6px;
+}
+
+/* Thumb styles */
+.scrubber-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #2563eb;
+  cursor: pointer;
+  margin-top: -4px; /* (track_height - thumb_height) / 2 = (4 - 12)/2 = -4px */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+.scrubber-slider:hover::-webkit-slider-thumb {
+  transform: scale(1.25);
+  background: #1d4ed8;
+}
+.scrubber-slider:active::-webkit-slider-thumb {
+  transform: scale(1.4);
+  background: #1d4ed8;
+}
+
+.scrubber-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: #2563eb;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+.scrubber-slider:hover::-moz-range-thumb {
+  transform: scale(1.25);
+  background: #1d4ed8;
+}
+.scrubber-slider:active::-moz-range-thumb {
+  transform: scale(1.4);
+  background: #1d4ed8;
+}
+
+/* ── Settings Panel Animations ───────────────────────────────────── */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 200ms ease-out forwards;
+}
+
+/* ── Toast Animations ────────────────────────────────────────────── */
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 200ms ease-out forwards;
+}
