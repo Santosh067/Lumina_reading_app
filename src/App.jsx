@@ -107,12 +107,12 @@ function tokenizeText(input) {
 }
 
 // Strips emojis, special symbols, and non-readable characters.
-// Keeps: letters (any script), numbers, basic punctuation, whitespace.
+// Keeps: letters (any script), combining marks (vowels/diacritics), numbers, basic punctuation, whitespace.
 function sanitizeText(input) {
-  // Remove emoji and symbol Unicode blocks, keep letters/numbers/punctuation/whitespace
+  // Remove emoji and symbol Unicode blocks, keep letters/marks/numbers/punctuation/whitespace
   return input
     .replace(/[\u{1F600}-\u{1F9FF}\u{1FA00}-\u{1FA9F}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}\u{1F1E0}-\u{1F1FF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1FA70}-\u{1FAFF}\u{2300}-\u{23FF}\u{2B50}\u{2934}-\u{2935}\u{3030}\u{303D}\u{3297}\u{3299}\u{200B}-\u{200F}\u{2028}-\u{202F}\u{2060}-\u{206F}\u{FEFF}]/gu, '')
-    .replace(/[^\p{L}\p{N}\p{P}\p{Z}\s]/gu, '')
+    .replace(/[^\p{L}\p{M}\p{N}\p{P}\p{Z}\s]/gu, '')
     .replace(/[ \t]+/g, ' ');
 }
 
@@ -443,6 +443,51 @@ function ReadingAssistantApp() {
       setActiveIndex(-1);
     }
   }, [text]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Auto Language and Engine Selection ────────────────────────────────────
+  useEffect(() => {
+    const trimmed = text.trim();
+    if (!trimmed || voices.length === 0) return;
+
+    const detectedLang = detectLanguageCode(trimmed);
+    if (detectedLang === "hi-IN") {
+      if (ttsEngine === "native") {
+        const nativeHindi = voices.find(v => {
+          const l = v.lang.toLowerCase();
+          const n = v.name.toLowerCase();
+          return l.includes("hi") || l.includes("india") || n.includes("hindi") || n.includes("india");
+        });
+        if (nativeHindi) {
+          if (selectedVoice !== nativeHindi.name) {
+            setSelectedVoice(nativeHindi.name);
+            setLanguageFilter("hindi");
+            showToast("Hindi text detected! Switched to native Hindi voice.");
+          }
+        } else {
+          setTtsEngine("sarvam");
+          setSarvamVoice("shubh");
+          showToast("Hindi text detected! Switched to Premium neural voice for high-quality reading.");
+        }
+      }
+    } else if (["bn-IN", "pa-IN", "gu-IN", "or-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN"].includes(detectedLang)) {
+      if (ttsEngine === "native") {
+        const matchingNative = voices.find(v => v.lang.toLowerCase().startsWith(detectedLang.split("-")[0]));
+        if (matchingNative) {
+          if (selectedVoice !== matchingNative.name) {
+            setSelectedVoice(matchingNative.name);
+            showToast("Detected regional script. Switched to matching native voice.");
+          }
+        } else {
+          setTtsEngine("sarvam");
+          const targetVoice = ["ta-IN", "te-IN", "kn-IN", "ml-IN"].includes(detectedLang) 
+            ? (detectedLang === "ta-IN" ? "aravind" : "kavya") 
+            : "shubh";
+          setSarvamVoice(targetVoice);
+          showToast("Regional script detected! Switched to Premium neural voice for perfect accent support.");
+        }
+      }
+    }
+  }, [text, voices, ttsEngine, selectedVoice, showToast]);
 
   // ── Dynamic dock height for safe bottom padding ───────────────────────────
   // Replaces fragile pb-[22rem] magic number
