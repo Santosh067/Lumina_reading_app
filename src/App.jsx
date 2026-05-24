@@ -930,11 +930,10 @@ function ReadingAssistantApp() {
           {errorMessage}
         </div>
       )}
-      {/* Header */}
       <header className="flex items-start sm:items-center justify-between gap-3 mb-4 sm:mb-5">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50 leading-tight">
-            Cadence.
+            Lumina.
           </h1>
           <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-0.5 leading-relaxed">
             Paste text or upload a .txt file. Listen with word-by-word highlighting.
