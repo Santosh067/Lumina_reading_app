@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    path { fill: #0f172a; }
+    @media (prefers-color-scheme: dark) {
+      path { fill: #f8fafc; }
+    }
+  </style>
+  <!-- Stylized curved 'L' vertical stem -->
+  <path d="M 35 75 C 35 52 39 32 48 30 C 48 45 42 63 35 75 Z" />
+  <!-- Wavy horizontal 'L' base -->
+  <path d="M 35 75 C 43 62 59 62 75 75 L 35 75 Z" />
+  <!-- Sparkle / 4-pointed star -->
+  <path d="M 59 36 Q 59 44 67 44 Q 59 44 59 52 Q 59 44 51 44 Q 59 44 59 36 Z" />
+</svg>
