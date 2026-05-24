@@ -976,29 +976,23 @@ function ReadingAssistantApp() {
         </div>
       )}
       <header className="flex items-start sm:items-center justify-between gap-3 mb-4 sm:mb-5">
-        <div className="flex items-center gap-2.5 sm:gap-3.5">
-          <div className="text-blue-600 dark:text-blue-400 shrink-0 transition-colors duration-200">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 sm:w-12 sm:h-12" aria-hidden="true">
-              {/* Stylized curved 'L' vertical stem */}
-              <path 
-                d="M 35 75 C 35 52 39 32 48 30 C 48 45 42 63 35 75 Z" 
-                fill="currentColor" 
+        <div className="flex min-w-0 items-center gap-2.5 sm:gap-3.5">
+          <div className="min-w-0">
+            <h1 className="leading-none" aria-label="Lumina">
+              <img
+                src="/brand/lumina-logo-black-text.png"
+                alt=""
+                aria-hidden="true"
+                className="block h-16 w-auto max-w-[min(64vw,20rem)] object-contain dark:hidden sm:h-20 sm:max-w-[24rem]"
+                draggable="false"
               />
-              {/* Wavy horizontal 'L' base */}
-              <path 
-                d="M 35 75 C 43 62 59 62 75 75 L 35 75 Z" 
-                fill="currentColor" 
+              <img
+                src="/brand/lumina-logo-white-text.png"
+                alt=""
+                aria-hidden="true"
+                className="hidden h-16 w-auto max-w-[min(64vw,20rem)] object-contain dark:block sm:h-20 sm:max-w-[24rem]"
+                draggable="false"
               />
-              {/* Sparkle / 4-pointed star */}
-              <path 
-                d="M 59 36 Q 59 44 67 44 Q 59 44 59 52 Q 59 44 51 44 Q 59 44 59 36 Z" 
-                fill="currentColor" 
-              />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-slate-900 dark:text-slate-50 leading-none flex items-center">
-              Lumina<span className="text-blue-600 dark:text-blue-400">.</span>
             </h1>
             <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
               Paste text or upload a .txt file. Listen with word-by-word highlighting.
