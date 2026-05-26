@@ -214,7 +214,10 @@ function ReadingAssistantApp() {
   const [text, setText] = useState("");
   const [words, setWords] = useState([]);
   const [voices, setVoices] = useState([]);
-  const [languageFilter, setLanguageFilter] = useState("all");
+  const [languageFilter, setLanguageFilter] = useState(() => {
+    const savedEngine = safeLocalStorage.getItem("pra-engine") || "native";
+    return savedEngine === "sarvam" ? "premium" : "all";
+  });
   // Single enum replaces two booleans (eliminated invalid isPlaying+isPaused=true state)
   const [playbackState, setPlaybackState] = useState("idle"); // 'idle' | 'playing' | 'paused'
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -453,12 +456,14 @@ function ReadingAssistantApp() {
     if (detectedLang === "hi-IN") {
       if (ttsEngine === "native") {
         setTtsEngine("sarvam");
+        setLanguageFilter("premium");
         setSarvamVoice("shubh");
         showToast("Hindi text detected! Switched to Premium neural voice for high-quality reading.");
       }
     } else if (["bn-IN", "pa-IN", "gu-IN", "or-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN"].includes(detectedLang)) {
       if (ttsEngine === "native") {
         setTtsEngine("sarvam");
+        setLanguageFilter("premium");
         const targetVoice = ["ta-IN", "te-IN", "kn-IN", "ml-IN"].includes(detectedLang) 
           ? (detectedLang === "ta-IN" ? "aravind" : "kavya") 
           : "shubh";
@@ -980,17 +985,6 @@ function ReadingAssistantApp() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowSettings(!showSettings)}
-            className={`w-11 h-11 shrink-0 rounded-full border flex items-center justify-center motion-safe:transition-colors active:scale-95 ${
-              showSettings
-                ? "bg-blue-600 border-blue-600 text-white hover:bg-blue-700"
-                : "border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200"
-            }`}
-            aria-label="Toggle speech preferences"
-          >
-            <Settings size={18} />
-          </button>
-          <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="w-11 h-11 shrink-0 rounded-full border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 motion-safe:transition-colors active:scale-95"
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
@@ -1000,82 +994,7 @@ function ReadingAssistantApp() {
         </div>
       </header>
 
-      {/* Settings Panel */}
-      {showSettings && (
-        <div className="mb-4 p-5 rounded-2xl border border-gray-200 bg-[#fdfbf9] shadow-sm flex flex-col gap-4 animate-slide-down">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-            <h2 className="text-xs font-semibold tracking-wider uppercase text-slate-500">
-              Speech Preferences
-            </h2>
-            <button 
-              onClick={() => setShowSettings(false)}
-              className="text-xs text-gray-400 hover:text-slate-800 font-medium"
-            >
-              Done
-            </button>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Engine Select */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-600">
-                Synthesis Engine
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setTtsEngine("native")}
-                  className={`px-3 py-2 rounded-xl text-xs font-medium border transition-all duration-200 ${
-                    ttsEngine === "native"
-                      ? "bg-slate-800 border-slate-800 text-white shadow-sm"
-                      : "border-gray-200 text-slate-600 bg-white hover:bg-slate-50"
-                  }`}
-                >
-                  Native TTS (Free)
-                </button>
-                <button
-                  onClick={() => setTtsEngine("sarvam")}
-                  className={`px-3 py-2 rounded-xl text-xs font-medium border transition-all duration-200 ${
-                    ttsEngine === "sarvam"
-                      ? "bg-slate-800 border-slate-800 text-white shadow-sm"
-                      : "border-gray-200 text-slate-600 bg-white hover:bg-slate-50"
-                  }`}
-                >
-                  Sarvam AI (Premium)
-                </button>
-              </div>
-            </div>
-
-            {/* If Sarvam AI active: Premium Voices list */}
-            {ttsEngine === "sarvam" && (
-              <div className="flex flex-col gap-1.5 animate-slide-down">
-                <label htmlFor="sarvam-voice-select" className="text-xs font-semibold text-slate-600">
-                  Premium Neural Voice (`bulbul:v3`)
-                </label>
-                <select
-                  id="sarvam-voice-select"
-                  value={sarvamVoice}
-                  onChange={(e) => setSarvamVoice(e.target.value)}
-                  className="rounded-xl border border-gray-200 bg-white text-slate-800 px-3 py-2 text-xs outline-none focus:border-slate-800 focus:ring-1 focus:ring-slate-800/10"
-                >
-                  <option value="shubh">Shubh (Male - Hindi & Multi-lingual)</option>
-                  <option value="anushka">Anushka (Female - Hindi & Multi-lingual)</option>
-                  <option value="aravind">Aravind (Male - Tamil / South Languages)</option>
-                  <option value="kavya">Kavya (Female - Telugu / South Languages)</option>
-                </select>
-              </div>
-            )}
-          </div>
-
-          {/* Sarvam AI — server-managed key notice */}
-          {ttsEngine === "sarvam" && (
-            <div className="border-t border-gray-100 pt-3 text-xs leading-relaxed">
-              <span className="text-slate-500">
-                Premium voices are powered by Sarvam AI. The API key is securely managed on the server.
-              </span>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Error */}
       {error && (
@@ -1246,59 +1165,66 @@ function ReadingAssistantApp() {
             </div>
           )}
 
-          {/* Voice row */}
-          {ttsEngine === "sarvam" ? (
-            <div className="flex items-center justify-between p-3 rounded-2xl border border-blue-500/20 bg-blue-50/30 dark:bg-blue-950/20 text-xs">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="font-semibold text-stone-700 dark:text-stone-300 truncate">
-                  Premium: <strong className="capitalize text-blue-600 dark:text-blue-400">{sarvamVoice}</strong>
-                </span>
-              </div>
-              <button
-                onClick={() => setShowSettings(true)}
-                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline shrink-0 ml-2"
+          {/* Voice select row */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <label
+                htmlFor="voice-select"
+                className="text-[10px] uppercase tracking-widest text-stone-400 dark:text-stone-500 font-bold"
               >
-                Change
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-2">
-                <label
-                  htmlFor="voice-select"
-                  className="text-[10px] uppercase tracking-widest text-stone-400 dark:text-stone-500 font-medium"
-                >
-                  Voice
-                </label>
-                {/* Language filter group */}
-                <div role="group" aria-label="Filter voices by language" className="flex items-center gap-1.5">
-                  {["all", "english", "hindi"].map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => setLanguageFilter(lang)}
-                      aria-pressed={languageFilter === lang}
-                      className={`px-2.5 py-1 rounded-full text-[11px] border transition-colors ${
-                        languageFilter === lang
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800"
-                      }`}
-                    >
-                      {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                    </button>
-                  ))}
-                </div>
+                Voice
+              </label>
+              {/* Language and Premium filter group */}
+              <div role="group" aria-label="Filter voices by language or premium" className="flex items-center gap-1.5 flex-wrap">
+                {[
+                  { id: "all", label: "All" },
+                  { id: "english", label: "English" },
+                  { id: "hindi", label: "Hindi" },
+                  { id: "premium", label: "Premium 🌟" }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setLanguageFilter(item.id);
+                      if (item.id === "premium") {
+                        setTtsEngine("sarvam");
+                      } else {
+                        setTtsEngine("native");
+                      }
+                    }}
+                    aria-pressed={languageFilter === item.id}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-colors ${
+                      languageFilter === item.id
+                        ? "bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-500/10"
+                        : "border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
+            </div>
 
+            {ttsEngine === "sarvam" ? (
+              <select
+                id="voice-select"
+                value={sarvamVoice}
+                onChange={(e) => setSarvamVoice(e.target.value)}
+                aria-label="Select premium voice"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 px-3 py-2.5 text-sm min-h-[44px] motion-safe:transition-colors font-medium cursor-pointer"
+              >
+                <option value="shubh">Shubh (Male - Hindi & Multi-lingual)</option>
+                <option value="anushka">Anushka (Female - Hindi & Multi-lingual)</option>
+                <option value="aravind">Aravind (Male - Tamil / South Languages)</option>
+                <option value="kavya">Kavya (Female - Telugu / South Languages)</option>
+              </select>
+            ) : (
               <select
                 id="voice-select"
                 value={selectedVoice}
                 onChange={(e) => setSelectedVoice(e.target.value)}
-                aria-label="Select voice"
-                className="w-full rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 px-3 py-2.5 text-sm min-h-[44px] motion-safe:transition-colors"
+                aria-label="Select native voice"
+                className="w-full rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 px-3 py-2.5 text-sm min-h-[44px] motion-safe:transition-colors cursor-pointer"
               >
                 {filteredVoices.length > 0 ? (
                   filteredVoices.map((voice) => (
@@ -1310,14 +1236,24 @@ function ReadingAssistantApp() {
                   <option value="">No {languageFilter} voices found on this device</option>
                 )}
               </select>
+            )}
 
-              {languageFilter === "hindi" && filteredVoices.length === 0 && (
-                <p className="text-[11px] text-amber-600 dark:text-amber-400 leading-relaxed">
-                  Install Hindi speech voices via your OS settings, then use Microsoft Edge.
-                </p>
-              )}
-            </div>
-          )}
+            {ttsEngine === "sarvam" && (
+              <p className="text-[11px] text-blue-600 dark:text-blue-400 leading-relaxed font-semibold flex items-center gap-1.5 animate-fade-in-down">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Premium voices are powered by Sarvam AI bulbul:v3 neural synthesis.
+              </p>
+            )}
+
+            {languageFilter === "hindi" && ttsEngine === "native" && filteredVoices.length === 0 && (
+              <p className="text-[11px] text-amber-600 dark:text-amber-400 leading-relaxed">
+                Install Hindi speech voices via your OS settings, or click <strong>Premium 🌟</strong> for perfect high-quality Hindi reading.
+              </p>
+            )}
+          </div>
 
           {/* Speed + playback row */}
           <div className="flex items-center gap-4">
