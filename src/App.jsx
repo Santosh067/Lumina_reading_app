@@ -468,7 +468,7 @@ function ReadingAssistantApp() {
         setTtsEngine("sarvam");
         setLanguageFilter("premium");
         const targetVoice = ["ta-IN", "te-IN", "kn-IN", "ml-IN"].includes(detectedLang) 
-          ? (detectedLang === "ta-IN" ? "aravind" : "kavya") 
+          ? (detectedLang === "ta-IN" ? "gokul" : "kavya") 
           : "shubh";
         setSarvamVoice(targetVoice);
         showToast("Regional script detected! Switched to Premium neural voice for perfect accent support.");
@@ -1217,8 +1217,8 @@ function ReadingAssistantApp() {
                 className="w-full rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 px-3 py-2.5 text-sm min-h-[44px] motion-safe:transition-colors font-medium cursor-pointer"
               >
                 <option value="shubh">Shubh (Male - Hindi & Multi-lingual)</option>
-                <option value="anushka">Anushka (Female - Hindi & Multi-lingual)</option>
-                <option value="aravind">Aravind (Male - Tamil / South Languages)</option>
+                <option value="shruti">Shruti (Female - Hindi & Multi-lingual)</option>
+                <option value="gokul">Gokul (Male - Tamil / South Languages)</option>
                 <option value="kavya">Kavya (Female - Telugu / South Languages)</option>
               </select>
             ) : (
