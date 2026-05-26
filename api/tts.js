@@ -38,6 +38,10 @@ export default async function handler(req, res) {
 
   // ── Forward to Sarvam AI ──────────────────────────────────────────────────
   try {
+    // English 'en-IN' is unsupported by Sarvam TTS; coerce it to 'hi-IN' which
+    // is fully supported and reads English text beautifully with a premium accent.
+    const targetLanguage = (!languageCode || languageCode === 'en-IN') ? 'hi-IN' : languageCode;
+
     const sarvamResponse = await fetch('https://api.sarvam.ai/text-to-speech', {
       method: 'POST',
       headers: {
@@ -46,7 +50,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         text: text.trim(),
-        target_language_code: languageCode || 'en-IN',
+        target_language_code: targetLanguage,
         model: 'bulbul:v3',
         speaker: voice || 'shubh',
         pace: pace || 1.0,
@@ -56,7 +60,10 @@ export default async function handler(req, res) {
 
     if (!sarvamResponse.ok) {
       const errData = await sarvamResponse.json().catch(() => ({}));
-      const errMsg = errData.error || errData.message || `Sarvam API error (${sarvamResponse.status})`;
+      // Resolve [object Object] by extracting message strings from nested error objects
+      const errMsg = (errData.error && typeof errData.error === 'object')
+        ? (errData.error.message || JSON.stringify(errData.error))
+        : (errData.error || errData.message || `Sarvam API error (${sarvamResponse.status})`);
       console.error('[tts] Sarvam API error:', errMsg);
       return res.status(sarvamResponse.status).json({ error: errMsg });
     }

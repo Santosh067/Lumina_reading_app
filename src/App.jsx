@@ -327,7 +327,10 @@ function ReadingAssistantApp() {
 
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error || `Server error (${response.status})`);
+      const errMsg = (errData.error && typeof errData.error === 'object')
+        ? (errData.error.message || JSON.stringify(errData.error))
+        : (errData.error || `Server error (${response.status})`);
+      throw new Error(errMsg);
     }
 
     const data = await response.json();
