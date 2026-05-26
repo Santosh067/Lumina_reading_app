@@ -4,7 +4,7 @@
 //        accessibility, mobile safe-area, reduced-motion, progress indicator.
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Play, Pause, Square, Upload, Sun, Moon, Trash2, BookOpen, Edit3 } from "lucide-react";
+import { Play, Pause, Square, Upload, Sun, Moon, Trash2, BookOpen, Edit3, Settings } from "lucide-react";
 
 const safeLocalStorage = {
   getItem: (key, defaultValue = "") => {
@@ -452,39 +452,18 @@ function ReadingAssistantApp() {
     const detectedLang = detectLanguageCode(trimmed);
     if (detectedLang === "hi-IN") {
       if (ttsEngine === "native") {
-        const nativeHindi = voices.find(v => {
-          const l = v.lang.toLowerCase();
-          const n = v.name.toLowerCase();
-          return l.includes("hi") || l.includes("india") || n.includes("hindi") || n.includes("india");
-        });
-        if (nativeHindi) {
-          if (selectedVoice !== nativeHindi.name) {
-            setSelectedVoice(nativeHindi.name);
-            setLanguageFilter("hindi");
-            showToast("Hindi text detected! Switched to native Hindi voice.");
-          }
-        } else {
-          setTtsEngine("sarvam");
-          setSarvamVoice("shubh");
-          showToast("Hindi text detected! Switched to Premium neural voice for high-quality reading.");
-        }
+        setTtsEngine("sarvam");
+        setSarvamVoice("shubh");
+        showToast("Hindi text detected! Switched to Premium neural voice for high-quality reading.");
       }
     } else if (["bn-IN", "pa-IN", "gu-IN", "or-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN"].includes(detectedLang)) {
       if (ttsEngine === "native") {
-        const matchingNative = voices.find(v => v.lang.toLowerCase().startsWith(detectedLang.split("-")[0]));
-        if (matchingNative) {
-          if (selectedVoice !== matchingNative.name) {
-            setSelectedVoice(matchingNative.name);
-            showToast("Detected regional script. Switched to matching native voice.");
-          }
-        } else {
-          setTtsEngine("sarvam");
-          const targetVoice = ["ta-IN", "te-IN", "kn-IN", "ml-IN"].includes(detectedLang) 
-            ? (detectedLang === "ta-IN" ? "aravind" : "kavya") 
-            : "shubh";
-          setSarvamVoice(targetVoice);
-          showToast("Regional script detected! Switched to Premium neural voice for perfect accent support.");
-        }
+        setTtsEngine("sarvam");
+        const targetVoice = ["ta-IN", "te-IN", "kn-IN", "ml-IN"].includes(detectedLang) 
+          ? (detectedLang === "ta-IN" ? "aravind" : "kavya") 
+          : "shubh";
+        setSarvamVoice(targetVoice);
+        showToast("Regional script detected! Switched to Premium neural voice for perfect accent support.");
       }
     }
   }, [text, voices, ttsEngine, selectedVoice, showToast]);
@@ -1001,8 +980,19 @@ function ReadingAssistantApp() {
         </div>
         <div className="flex items-center gap-2">
           <button
+            onClick={() => setShowSettings(!showSettings)}
+            className={`w-11 h-11 shrink-0 rounded-full border flex items-center justify-center motion-safe:transition-colors active:scale-95 ${
+              showSettings
+                ? "bg-blue-600 border-blue-600 text-white hover:bg-blue-700"
+                : "border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200"
+            }`}
+            aria-label="Toggle speech preferences"
+          >
+            <Settings size={18} />
+          </button>
+          <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="w-11 h-11 shrink-0 rounded-full border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-800 motion-safe:transition-colors active:scale-95"
+            className="w-11 h-11 shrink-0 rounded-full border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 flex items-center justify-center hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 motion-safe:transition-colors active:scale-95"
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           >
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
