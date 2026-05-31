@@ -1,4 +1,4 @@
-# 📖 Lumina — Personal Reading Assistant
+﻿# 📖 Lumina — Personal Reading Assistant
 
 A premium, highly responsive Vite + React + Tailwind CSS web application designed to help users read and listen to text with real-time, word-by-word synchronized highlighting. The application features dual-engine text-to-speech capabilities, supporting both free local device voices and premium Indic neural voices via a secure serverless backend.
 
@@ -115,3 +115,4 @@ npm run dev
 # 3. Build production bundle
 npm run build
 ```
+
